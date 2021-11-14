@@ -1,0 +1,82 @@
+
+set follow-fork-mode child
+set disassembly-flavor intel   
+alias gil = disassemble
+
+#alias gili = x/2i
+#alias gilr = 'x/2wx $ebp'
+
+unset env
+show env
+
+# break at main
+b *main
+shell sleep 0.5
+# run wrapper with symlink as arg, pipe input later into forked vortex process
+r `cat /tmp/docgil-raw` < /tmp/docgil
+shell sleep 0.5
+b *execve
+shell sleep 0.5
+c
+shell sleep 0.5
+si
+shell sleep 0.5
+si
+shell sleep 0.5
+del
+shell sleep 0.5
+break *main
+shell sleep 0.5
+c
+shell sleep 0.5
+# now in main from vortex prog
+b *exit
+b *printf
+b *fgets
+
+
+
+
+shell echo "show ebp"
+b *0x0804859d
+c
+i r ebp
+
+
+
+
+# c
+# shell sleep 0.5
+# c
+# shell sleep 0.5
+# c
+# shell echo "frees got updated"
+# shell sleep 0.5
+# 
+# 
+# 
+# c
+# shell sleep 0.5
+# c
+# shell sleep 0.5
+# c
+# shell echo "now at printf for big payload"
+# shell echo "buf:"
+# x/s 0x804c600
+# 
+# shell sleep 0.5
+# finish
+# 
+# shell echo "updated free.got"
+# x/1wx 0x0804a010
+# 
+# shell echo "arg of system aka free.got"
+# x/1wx 0xffffde0c
+# 
+# si
+# shell sleep 0.5
+# si
+# shell sleep 0.5
+# si
+
+
